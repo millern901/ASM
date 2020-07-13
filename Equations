@@ -1,0 +1,42 @@
+.section .data
+promptInputFirst: .asciz "Enter a String: "
+
+newLine: .asciz "\n"
+charType: .asciz " %c"
+intType: .asciz "%d"
+
+inputFirst: .space 4
+inputSecond: .space 4
+inputOperator: .space 4
+
+.section .text
+.global main
+
+main:
+	// Ask for Input
+	ldr x0, =promptInputFirst
+	bl printf
+
+	// Scan for Input
+    ldr x0, =intType
+    ldr x2, =intType
+    ldr x4, =charType
+    ldr x1, =inputFirst
+    ldr x3, =inputSecond
+    ldr x5, =inputOperator
+    bl scanf
+
+	// Load the data from memory and print it
+	ldr x0, =inputFirst
+	ldr x0, [x0, #0]
+    bl printf
+
+    ldr x0, =inputSecond
+    ldr x0, [x0, #0]
+    bl printf
+
+    ldr x0, =inputOperator
+    ldr x0, [x0, #0]
+    bl printf
+
+    ret

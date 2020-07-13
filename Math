@@ -1,0 +1,107 @@
+.section .data
+input_prompt: .asciz “Enter an Expression in the Form: (Number Number Operator(+,-,*,/)) ”
+divide_by_zero_prompt: .asciz “Error: Cannot Divide by Zero”
+invalid_operator_prompt: .asciz “Invalid Operator”
+
+input_specifier: .asciz “%d %d %c”
+int_specifier: .asciz “%d”
+char_specifier: .asciz “%c”
+flush: .asciz “\n”
+
+first_input: .space 4
+second_input: .space 4
+thrid_input: .space 1
+
+.section .text
+.global main
+
+main:
+	// Print input prompt
+	ldr x0, =input_prompt
+	bl printf
+	ldr x0, =flush
+	bl printf
+
+	// Scan for input
+	ldr x0, =input_specifier
+	ldr x1, =first_input
+	ldr x2, =second_input
+	ldr x3, =third_input
+	bl scanf
+
+	// Load operator
+	ldr x20, =third_input
+	lbrd w21, [x20]
+
+	// Switch statements
+	bl switch
+
+	ldr x0, =int_specifier
+	mov x1, x19
+	bl printf
+	ldr x0, =flush
+	bl printf	
+
+
+exit:
+	mov x0, #0
+	mov x8, #93
+	svc #0
+
+switch:
+	cmp w21, #42
+	beq MUL
+	cmp w21, #43
+	beq ADD
+	cmp w21, #45
+	beq SUB
+	cmp w21, #47
+	beq DIV	
+	b IVO
+
+MUL:
+	ldr x0, =first_input
+	ldr w0, [x0 #0]
+	ldr x1, =second_input
+	ldr w1, [x1 #0]
+	mul w19, w0, w1
+	br x30
+
+ADD:
+	ldr x0, =first_input
+	ldr w0, [x0 #0]
+	ldr x1, =second_input
+	ldr w1, [x1 #0]
+	add w19, w0, w1
+	br x30
+
+SUB:
+	ldr x0, =first_input
+	ldr w0, [x0 #0]
+	ldr x1, =second_input
+	ldr w1, [x1 #0]
+	sub w19, w0, w1
+	br x30
+
+DIV:
+	ldr x0, =first_input
+	ldr w0, [x0 #0]
+	ldr x1, =second_input
+	ldr w1, [x1 #0]
+	cbz w1, DBZ
+	div w19, w0, w1
+	br x30
+
+DBZ:
+	ldr x0, =divide_by_zero_prompt
+	bl printf
+	ldr x0, =flush
+	bl printf
+	b EXIT 
+	
+IVO:
+	ldr x0, =invalid_operator_prompt
+	bl printf
+	ldr x0, =flush
+	bl printf
+	b EXIT
